@@ -1,1 +1,1 @@
-# AquaticMicroData
+This is the Github Repository for the Advanced Aquatic Environmental Microbiology atUGA EHSC 8310. 
