@@ -1,0 +1,52 @@
+---
+title: "AnalysisScriptEHSC8130"
+author: "Megan Lott"
+date: "October 28, 2019"
+output: html_document
+---
+
+
+```{r load libraries}
+
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(wesanderson)
+
+```
+
+
+```{r}
+#load data. path is relative to project directory
+d = readRDS("../Data/processed_data/data_cleaned.rds") 
+```
+
+
+Let's begin by visualizing some of this data. We first want to examine the E. coli counts by timepoint.
+
+```{r}
+
+final_ecoli = d %>%
+  filter(final_ecoli != "NA") %>%
+  ggplot(aes(x = date, y = final_ecoli, group = sample_id, color = sample_id)) + 
+  geom_point() + 
+  geom_line() + 
+  xlab("Date") + 
+  ylab ("CFU/100mL") + 
+  ggtitle("Enumeration of E. coli")
+
+
+log_final_ecoli = d %>%
+  filter(final_ecoli != "NA") %>%
+  ggplot(aes(x = date, y = log10(final_ecoli), group = sample_id, color = sample_id)) + 
+  geom_point() + 
+  geom_line() + 
+  xlab("Date") + 
+  ylab ("Log(CFU/100mL)") + 
+  ggtitle("Enumeration of E. coli")
+
+ggsave(filename="../Results/final_ecoli.png",plot=final_ecoli, width = 8, height = 7) 
+ggsave(filename="../Results/log_final_ecoli.png",plot=log_final_ecoli, width = 8, height = 7) 
+
+```
+
