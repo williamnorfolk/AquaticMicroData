@@ -41,24 +41,25 @@ Lots of variables here, mostly just information that needed to be recorded but i
 
 ```{r}
 clean_names = micro_raw_data %>% dplyr::rename(sample_id = `Sample ID`, 
-                        last_rain = `Days Sine Last Rainfaill Greater than 2 inches (amount of rainfall)`,
+  last_rain = `Days Sine Last Rainfaill Greater than 2 inches (amount of rainfall)`,
                                      collection_time = `Collection Time`,
-                                     ambient_air_high_c = `Ambient Air Temp High (C)`,
+                                    ambient_air_high_c = `Ambient Air Temp High (C)`,
                                      ambient_air_low_c = `Ambient Air Temp Low (C)`,
                                      water_temp = `Water Temp (C)`,
                                      conductivity = `Conductivity (mS/cm)`,
                                      final_ecoli = `Final CFU/100 ml`,
                                      exceeds_epa = `Exceeds EPA STV (410/100mL)`,
-                                     salmonella = `Chromagar Confirmed Salmonella`,
                                      date = Date,
-                                     ph = pH)
+                                     ph = pH,
+                                     xlt4_salmonella = `XLT-4 Salmonella`,
+                          confirmed_salmonella = `Chromagar Confirmed Salmonella`)
 
 ```
 
 
 
 ```{r}
-reduce_vars <- clean_names %>% dplyr::select(sample_id, last_rain, date, ambient_air_high_c, ambient_air_low_c, water_temp, conductivity, ph, final_ecoli, exceeds_epa, salmonella )
+reduce_vars <- clean_names %>% dplyr::select(sample_id, last_rain, date, ambient_air_high_c, ambient_air_low_c, water_temp, conductivity, ph, final_ecoli, exceeds_epa, confirmed_salmonella, xlt4_salmonella)
 
 glimpse(reduce_vars)
 ```
@@ -96,6 +97,7 @@ vis_dat(reduce_vars)
 Let's adjust the 'last_rain' variable into a numeric section. 
 
 ```{r}
+reduce_vars$last_rain <- as.numeric(as.character(reduce_vars$last_rain)) 
 
 ```
 

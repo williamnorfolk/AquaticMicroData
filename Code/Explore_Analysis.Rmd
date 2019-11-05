@@ -93,3 +93,8 @@ y <- ggplot(add_week_count, aes(x = sample_id, y = week_count))
 y + geom_tile(aes(fill = final_ecoli)) +xlab("Site Name") + ylab("Week Number")
 ```
 
+
+
+
+
+
