@@ -36,6 +36,8 @@ glimpse(clean_data)
 site_vs_ecoli <- ggplot(clean_data, aes(x = sample_id, y = final_ecoli)) + geom_bar(stat = "identity")
 
 site_vs_ecoli + xlab("Site Name") + ylab("Final E. coli (cfus)")
+
+
 ```
 
 
@@ -95,6 +97,36 @@ y + geom_tile(aes(fill = final_ecoli)) +xlab("Site Name") + ylab("Week Number")
 
 
 
+```{r}
+ggplot(add_week_count, aes(x = week_count, y = conductivity)) + geom_jitter()
+ggplot(add_week_count, aes(x = week_count, y = ph)) + geom_jitter()
+ggplot(add_week_count, aes(x = week_count, y = water_temp)) + geom_jitter()
+ggplot(add_week_count, aes(x = week_count, y = ambient_air_high_c)) + geom_jitter()
+ggplot(add_week_count, aes(x = week_count, y = ambient_air_low_c)) + geom_jitter()
+#ggplot(add_week_count, aes(x = week_count, y = last_rain)) + geom_jitter()
+ggplot(add_week_count, aes(x = week_count, y = final_ecoli, color = sample_id)) + geom_jitter()
+
+
+```
+
+###### Conductivity measures and septic 
+
+```{r}
+
+con <- ggplot(clean_data, aes(x = conductivity, y = final_ecoli, color = sample_id)) + geom_jitter()
+
+con
+
+```
+
+
+```{r}
+
+con_2 <- ggplot(clean_data, aes(x = exceeds_epa, y = conductivity)) + geom_violin() + geom_jitter(aes(color = sample_id)) + xlab("Exceeds EPA")
+
+
+con_2
+```
 
 
 
