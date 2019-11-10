@@ -1,0 +1,139 @@
+---
+title: "Predictor Analysis"
+author: "William Norfolk"
+date: "11/10/2019"
+output: word_document
+---
+
+```{r}
+
+library(dplyr)
+library(tidyverse)
+library(forcats)
+library(ggthemes)
+library(knitr)
+library(naniar)
+library(visdat)
+library(gridExtra)
+library(ggpubr)
+library(caret)
+library(rpart)
+library(rpart.plot)
+
+```
+
+```{r}
+
+#load data. path is relative to project directory
+clean_data <-  readRDS("../Data/processed_data/data_cleaned.rds") 
+
+glimpse(clean_data)
+```
+```{r}
+clean_data$days_sig_rainfall <- as.factor(as.numeric(clean_data$days_sig_rainfall))
+
+```
+
+
+```{r}
+clean_data <- clean_data[-c(21,22), ]
+```
+
+
+Rainfall Plots
+
+```{r}
+
+rain_check <- ggplot(clean_data, aes(x = days_sig_rainfall, y = final_ecoli, fill = days_sig_rainfall)) + geom_bar(stat = "identity") + xlab("Days Since Significant Rainfall (>1)") + ylab("Final E. coli (CFUs)") + ggtitle("E. coil vs. Rainfall") + theme(legend.position = "none")
+
+rain_check
+```
+
+```{r}
+rain_v_con <- ggplot(clean_data, aes(x = days_sig_rainfall, y = conductivity, fill = days_sig_rainfall)) + geom_bar(stat = "identity") + xlab("Days Since Significant Rainfall (>1)") + ylab("Conductivity") + ggtitle("Conductivity vs. Rainfall") + theme(legend.position = "none")
+
+rain_v_con
+```
+
+
+```{r}
+exceeds_vs_rain <- ggplot(clean_data, aes(x = exceeds_epa, y = days_sig_rainfall, fill = days_sig_rainfall)) + geom_bar(stat = "identity") + xlab("Exceeds EPA Standards") + ggtitle("Significant Rainfall and EPA Standards") + theme(legend.position = "bottom", axis.title.y = element_blank(), axis.text.y = element_blank())
+
+exceeds_vs_rain
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Modeling Not working Below Here...Too Few samples probs?
+
+
+
+
+
+
+
+```{r}
+vis_dat(clean_data)
+```
+
+```{r}
+#mod_data <- clean_data[!(clean_data$final_ecoli == "NA"), ]
+
+#mod_data <- mod_data[-c(20,21,22), ]
+
+#vis_dat(mod_data)
+```
+
+
+```{r}
+mod_data <- mod_data[, c(9,1,2,3,4,5,6,7,8,10,11,12,13)]
+
+```
+
+```{r}
+outcomename = "final_ecoli"
+
+```
+
+
+
+```{r}
+set.seed(1111) 
+outcome = "final_ecoli"
+
+
+fitControl <- trainControl(method="repeatedcv",number=5,repeats=5) 
+Npred <- ncol(mod_data)-1
+resultmat <- data.frame(Variable = names(mod_data)[-1], Accuracy = rep(0,Npred))
+for (n in 2:ncol(mod_data))
+{
+  fit_single <- caret::train( as.formula(paste(outcomename, "~",names(mod_data)[n])) , data = mod_data, method = "rpart", trControl = fitControl, na.action = na.pass, tuneLength = 10) 
+resultmat[n-1,2]= max(fit_single$results$Accuracy)  
+}
+
+print(resultmat)
+
+
+```
+
+
+
+
+
+
