@@ -41,18 +41,29 @@ clean_data <- clean_data[-c(21,22), ]
 
 
 Rainfall Plots
+```{r}
+aggregate(clean_data[, 9], list(clean_data$days_sig_rainfall), mean)
+
+```
+
 
 ```{r}
 
-rain_check <- ggplot(clean_data, aes(x = days_sig_rainfall, y = final_ecoli, fill = days_sig_rainfall)) + geom_bar(stat = "identity") + xlab("Days Since Significant Rainfall (>1)") + ylab("Final E. coli (CFUs)") + ggtitle("E. coil vs. Rainfall") + theme(legend.position = "none")
+rain_check <- ggplot(clean_data, aes(x = days_sig_rainfall, y = final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + xlab("Days Since Significant Rainfall (>1)") + ylab("Mean Final E. coli (CFUs)") + ggtitle("E. coil vs. Rainfall") + theme(legend.position = "none")
 
 rain_check
 ```
+```{r}
+aggregate(clean_data[, 7], list(clean_data$days_sig_rainfall), mean)
+
+```
+
 
 ```{r}
-rain_v_con <- ggplot(clean_data, aes(x = days_sig_rainfall, y = conductivity, fill = days_sig_rainfall)) + geom_bar(stat = "identity") + xlab("Days Since Significant Rainfall (>1)") + ylab("Conductivity") + ggtitle("Conductivity vs. Rainfall") + theme(legend.position = "none")
+rain_v_con <- ggplot(clean_data, aes(x = days_sig_rainfall, y = conductivity, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + xlab("Days Since Significant Rainfall (>1)") + ylab("Conductivity") + ggtitle("Mean Conductivity vs. Rainfall") + theme(legend.position = "none")
 
 rain_v_con
+
 ```
 
 
@@ -64,6 +75,41 @@ exceeds_vs_rain
 
 
 
+How about a quick ANOVA
+```{r method 1}
+mod_test <- lm(formula = final_ecoli ~ days_sig_rainfall, data = clean_data)
+
+anova(mod_test)
+```
+
+
+```{r method 2}
+anova_ecoli <- aov(final_ecoli ~ days_sig_rainfall, data = clean_data)
+
+print(anova_ecoli)
+```
+
+Okay not too great, lets try individual t-test permutations
+
+```{r re group for t test}
+days_15 <- subset(clean_data, days_sig_rainfall == "15")
+days_27 <- subset(clean_data, days_sig_rainfall == "27")
+days_34 <- subset(clean_data, days_sig_rainfall == "34")
+
+x <- days_15$final_ecoli
+y <- days_27$final_ecoli
+z <- days_34$final_ecoli
+```
+
+```{r}
+t.test(x, y)
+
+t.test(x, z)
+
+t.test(y, z)
+```
+
+Well nothing is significant it looks like unfortunately...
 
 
 
@@ -80,7 +126,11 @@ exceeds_vs_rain
 
 
 
-Modeling Not working Below Here...Too Few samples probs?
+
+
+
+
+Tree models are no good unfortunately... likely too few observations? 
 
 
 
@@ -101,19 +151,19 @@ vis_dat(clean_data)
 ```
 
 
-```{r}
+#```{r}
 mod_data <- mod_data[, c(9,1,2,3,4,5,6,7,8,10,11,12,13)]
 
 ```
 
-```{r}
+#```{r}
 outcomename = "final_ecoli"
 
 ```
 
 
 
-```{r}
+#```{r}
 set.seed(1111) 
 outcome = "final_ecoli"
 
