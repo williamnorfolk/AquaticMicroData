@@ -34,7 +34,7 @@ clean_data$days_sig_rainfall <- as.factor(as.numeric(clean_data$days_sig_rainfal
 
 ```
 
-
+Drop NAs
 ```{r}
 clean_data <- clean_data[-c(21,22), ]
 ```
@@ -48,8 +48,10 @@ aggregate(clean_data[, 9], list(clean_data$days_sig_rainfall), mean)
 
 
 ```{r}
+ecoli_axes <- expression(paste("Final Mean ", italic("E. coli"), "CFUs"))
+title_here <- expression(paste(italic("E. coli"), " vs. Rainfall"))
 
-rain_check <- ggplot(clean_data, aes(x = days_sig_rainfall, y = final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + xlab("Days Since Significant Rainfall (>1)") + ylab("Mean Final E. coli (CFUs)") + ggtitle("E. coil vs. Rainfall") + theme(legend.position = "none")
+rain_check <- ggplot(clean_data, aes(x = days_sig_rainfall, y = final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + xlab("Days Since Significant Rainfall (>1)") + ylab(ecoli_axes) + ggtitle(title_here) + theme(legend.position = "none")
 
 rain_check
 ```
@@ -64,13 +66,25 @@ rain_v_con <- ggplot(clean_data, aes(x = days_sig_rainfall, y = conductivity, fi
 
 rain_v_con
 
+
 ```
 
 
-```{r}
-exceeds_vs_rain <- ggplot(clean_data, aes(x = exceeds_epa, y = days_sig_rainfall, fill = days_sig_rainfall)) + geom_bar(stat = "identity") + xlab("Exceeds EPA Standards") + ggtitle("Significant Rainfall and EPA Standards") + theme(legend.position = "bottom", axis.title.y = element_blank(), axis.text.y = element_blank())
 
-exceeds_vs_rain
+```{r}
+
+side_bar <- ggplot(clean_data, aes(x = exceeds_epa, fill = days_sig_rainfall)) + geom_bar(aes(y = ..count../tapply(..count.., ..x.., sum)[..x..]), position = "dodge") + geom_text(aes(y = ..count../tapply(..count.., ..x.., sum)[..x..], label = scales::percent(..count../tapply(..count.., ..x.. ,sum)[..x..])), stat = "count",  position = position_dodge(0.9), vjust=-0.3)
+
+title_1 <- expression(paste("Drought Duration vs. EPA ", italic("E. coli"), "Standards"))
+
+side_bar + xlab("Exceeds EPA Standards") + ylab("Percent Composition") + scale_y_continuous(labels = scales::percent) + ggtitle(title_1) + theme(legend.position = "right", legend.direction = "vertical") + labs(fill = "Days Since\nSignificant Rainfall") + scale_fill_manual(values = c("#E4002B", "#B7BF10", "004E60"))
+
+
+
+
+stack_bar <- ggplot(clean_data, aes(x = exceeds_epa, fill = days_sig_rainfall)) + geom_bar(stat = "count", position = "fill")
+
+stack_bar
 ```
 
 
@@ -102,85 +116,257 @@ z <- days_34$final_ecoli
 ```
 
 ```{r}
-t.test(x, y)
+library(broom)
+library(purrr)
 
-t.test(x, z)
+c <- t.test(x, y)
 
-t.test(y, z)
+a <- t.test(x, z)
+
+t <- t.test(y, z)
+
+t_tab <- map_df(list(c, a, t), tidy)
+
+kable(t_tab)
 ```
 
 Well nothing is significant it looks like unfortunately...
 
 
+Plaza Over Time
+
+```{r plaza group}
+plaza1_only <- subset(clean_data, sample_id == "P1")
+plaza2_only <- subset(clean_data, sample_id == "P2")
+plaza_total <- rbind(plaza1_only, plaza2_only)
+mod_plaza <- plaza_total %>% dplyr::mutate(log_final_ecoli = log10(final_ecoli))
+
+```
+
+```{r}
+
+title_plaza <- expression(paste(italic("E. coli"), " vs. Drought Plaza"))
+mean_ecoli_cfu <- expression(paste("Mean ", italic("E. coli "), "CFUs (log10)"))
+
+plaza_time <- ggplot(plaza_total, aes(x = days_sig_rainfall, y = final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_plaza)+ scale_y_continuous(trans = "log10") + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+plaza_time
+
+plaza_time_2 <- ggplot(mod_plaza, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_plaza) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+plaza_time_2
+
+plaza_arrange <- plaza_time + expand_limits(y = c(0:5000)) + ggtitle("Plaza Stream") + xlab("Days Since Rain")
+
+plaza_arrange_2 <- plaza_time_2 + expand_limits(y = c(0:4)) + ggtitle("Plaza Stream") + xlab("Days Since Rain")
+```
+
+```{r}
+hos1_only <- subset(clean_data, sample_id == "H1")
+hos2_only <- subset(clean_data, sample_id == "H2")
+hos_total <- rbind(hos1_only, hos2_only)
+mod_hos <- hos_total %>% dplyr::mutate(log_final_ecoli = log10(final_ecoli))
+
+```
+
+```{r}
+
+title_hos <- expression(paste(italic("E. coli"), " vs. Drought Hospital"))
+
+
+hos_time <- ggplot(hos_total, aes(x = days_sig_rainfall, y = final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_hos) + scale_y_continuous(trans = "log10") + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+hos_time
+
+
+hos_time_2 <- ggplot(mod_hos, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_hos) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+hos_time_2
+
+hos_arrange <- hos_time + expand_limits(y = c(0:5000)) + ggtitle("Hospital") + xlab("Days Since Rain")
+
+hos_arrange_2 <- hos_time_2 + expand_limits(y = c(0:4)) + ggtitle("Hospital") + xlab("Days Since Rain")
+```
+
+```{r}
+vm1_only <- subset(clean_data, sample_id == "VM1")
+vm2_only <- subset(clean_data, sample_id == "VM2")
+vm_total <- rbind(vm1_only, vm2_only)
+mod_vm <- vm_total %>% dplyr::mutate(log_final_ecoli = log10(final_ecoli))
+
+```
+
+```{r}
+
+title_vm <- expression(paste(italic("E. coli"), " vs. Drought Vet Med"))
+
+
+vm_time <- ggplot(vm_total, aes(x = days_sig_rainfall, y = final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_vm)+ scale_y_continuous(trans = "log10") + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+vm_time
+
+vm_time_2 <- ggplot(mod_vm, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_vm) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+vm_time_2
+
+vm_arrange <- vm_time + expand_limits(y = c(0:5000)) + ggtitle("Vet Med") + xlab("Days Since Rain")
+
+vm_arrange_2 <- vm_time_2 + expand_limits(y = c(0:4)) + ggtitle("Vet Med") + xlab("Days Since Rain")
+```
+```{r}
+tan_total <- subset(clean_data, sample_id == "T1")
+mod_tan <- tan_total %>% dplyr::mutate(log_final_ecoli = log10(final_ecoli))
+
+
+```
+
+
+```{r}
+
+tan_time <- ggplot(tan_total, aes(x = days_sig_rainfall, y = final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_vm)+ scale_y_continuous(trans = "log10") + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+tan_time
+
+tan_time_2 <- ggplot(mod_tan, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_vm) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+tan_time_2
+
+tan_arrange <- tan_time + expand_limits(y = c(0:5000)) + ggtitle("Tanyard") + xlab("Days Since Rain")
+
+tan_arrange_2 <- tan_time_2 + expand_limits(y = c(0:4)) + ggtitle("Tanyard") + xlab("Days Since Rain")
+```
+
+
+
+```{r}
+#Plot 1 is incorrect
+ggarrange(plaza_arrange, hos_arrange, vm_arrange, tan_arrange, nrow = 1, ncol = 4)
+
+#This plot is correctly log scaled
+ggarrange(plaza_arrange_2, hos_arrange_2, vm_arrange_2, tan_arrange_2, nrow = 1, ncol = 4)
+
+```
+
+```{r}
+historic_data_802 <- subset(clean_data, sample_id == "MIDO 802")
+historic_data_818 <- subset(clean_data, sample_id == "MIDO 818")
+historic_data_825 <- subset(clean_data, sample_id == "MIDO 825")
+
+historic_all <- rbind(historic_data_825, historic_data_802, historic_data_818)
+
+historic_compare <- rbind(historic_all, plaza_total, hos_total)
+
+historic_mutate <- historic_compare %>% dplyr::mutate(sample_id = recode(sample_id,
+                                                  "MIDO 802" = "Fall 2016 & 2017",
+                                                  "MIDO 818" = "Fall 2016 & 2017",
+                                                  "MIDO 825" = "Fall 2016 & 2017",
+                                                      "P1" = "Fall 2019",
+                                                      "P2" = "Fall 2019",
+                                                      "H1" = "Fall 2019",
+                                                      "H2" = "Fall 2019"))
+
+mod_historic <- historic_mutate %>% dplyr::mutate(log_final_ecoli = log10(final_ecoli))
+
+```
+
+
+```{r}
+ecoli_log_not_mean <- expression(paste(italic("E. coli"), " CFUs (log10)"))
+
+log_title_ecoli <- expression(paste("Past vs. Present ", italic("E. coli"), " CFUs (log10) Combined Hospital and Plaza Sites"))
+
+hist_ecoli_not_log <- ggplot(mod_historic, aes(x = sample_id, y = final_ecoli)) + geom_boxplot()
+
+hist_ecoli_not_log
+
+hist_ecoli_log <- ggplot(mod_historic, aes(x = sample_id, y = log_final_ecoli, fill = sample_id)) + geom_boxplot(alpha = 0.5, lwd = 0.75) + xlab("Season Data Collected") + ylab(ecoli_log_not_mean) + ggtitle(log_title_ecoli) + theme_classic() + scale_fill_manual(values = c("#00A3AD", "#66435A"))
+
+hist_ecoli_log + theme(legend.position = "none")
+
+#Conductivity is not in correct units for past data
+hist_con <- ggplot(mod_historic, aes(x = sample_id, y = conductivity)) + geom_boxplot()
+
+hist_con
+
+hist_high_temp <- ggplot(mod_historic, aes(x = sample_id, y = ambient_air_high_c)) + geom_boxplot()
+
+hist_high_temp
+
+hist_low_temp <- ggplot(mod_historic, aes(x = sample_id, y = ambient_air_low_c)) + geom_boxplot()
+
+hist_low_temp
+
+hist_water_temp <- ggplot(mod_historic, aes(x = sample_id, y = water_temp, fill = sample_id)) + geom_boxplot(alpha = 0.5, lwd = 0.75) + xlab("Season Data Collected") + ylab("Water Temperature (C)") + ggtitle("Past vs. Present Water Temperature (C) Combined Hospital and Plaza Sites") + theme_classic() + scale_fill_manual(values = c("#00A3AD", "#66435A"))
+
+hist_water_temp + theme(legend.position = "none")
+```
+
+Now lets split into all years
+
+```{r}
+split_years <- separate(mod_historic, "date", into = c("Month", "Day", "Year"), sep = "\\.")
+
+split_years <- split_years %>% dplyr::mutate(Year = recode(Year,
+                                                           "2017" = "17"))
+```
+
+
+```{r}
+split_ecoli_not_log <- ggplot(split_years, aes(x = Year, y = final_ecoli)) + geom_boxplot()
+
+split_ecoli_not_log
+
+split_ecoli_log <- ggplot(split_years, aes(x = Year, y = log_final_ecoli, fill = Year)) + geom_boxplot(alpha = 0.5, lwd = 0.75) + xlab("Season Data Collected") + ylab(ecoli_log_not_mean) + ggtitle(log_title_ecoli) + theme_classic() + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+split_ecoli_log + theme(legend.position = "none")
+
+#Conductivity is not in correct units for past data
+split_con <- ggplot(split_years, aes(x = Year, y = conductivity)) + geom_boxplot()
+
+split_con
+
+split_high_temp <- ggplot(split_years, aes(x = Year, y = ambient_air_high_c)) + geom_boxplot()
+
+split_high_temp
+
+split_low_temp <- ggplot(split_years, aes(x = Year, y = ambient_air_low_c)) + geom_boxplot()
+
+split_low_temp
+
+split_water_temp <- ggplot(split_years, aes(x = Year, y = water_temp, fill = Year)) + geom_boxplot(alpha = 0.5, lwd = 0.75) + xlab("Season Data Collected") + ylab("Water Temperature (C)") + ggtitle("Past vs. Present Water Temperature (C) Combined Hospital and Plaza Sites") + theme_classic() + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+split_water_temp + theme(legend.position = "none")
+```
 
 
 
 
 
 
+Working Below this point...
 
+```{r}
+v_lines <- ggplot(plaza_total, aes(x = days_sig_rainfall, y = final_ecoli, group = sample_id, color = sample_id,)) + geom_linerange(aes(ymin = final_ecoli, ymax = conductivity,  position = "dodge")) + scale_y_continuous(sec.axis = ~. * 10)
 
+v_lines
+```
+```{r}
 
-
-
-
-
-
-
-
-
-
-Tree models are no good unfortunately... likely too few observations? 
-
-
-
+#annoying <- ggplot(clean_data, aes(x = days_sig_rainfall, y = final_ecoli, ))
+```
 
 
 
 
 ```{r}
-vis_dat(clean_data)
+library(plotly)
+
+
+dual_line <- plot_ly(data = clean_data, x = ~days_sig_rainfall, y = ~final_ecoli, type = "box")
+
+dual_line
 ```
 
-```{r}
-#mod_data <- clean_data[!(clean_data$final_ecoli == "NA"), ]
-
-#mod_data <- mod_data[-c(20,21,22), ]
-
-#vis_dat(mod_data)
-```
-
-
-#```{r}
-mod_data <- mod_data[, c(9,1,2,3,4,5,6,7,8,10,11,12,13)]
-
-```
-
-#```{r}
-outcomename = "final_ecoli"
-
-```
-
-
-
-#```{r}
-set.seed(1111) 
-outcome = "final_ecoli"
-
-
-fitControl <- trainControl(method="repeatedcv",number=5,repeats=5) 
-Npred <- ncol(mod_data)-1
-resultmat <- data.frame(Variable = names(mod_data)[-1], Accuracy = rep(0,Npred))
-for (n in 2:ncol(mod_data))
-{
-  fit_single <- caret::train( as.formula(paste(outcomename, "~",names(mod_data)[n])) , data = mod_data, method = "rpart", trControl = fitControl, na.action = na.pass, tuneLength = 10) 
-resultmat[n-1,2]= max(fit_single$results$Accuracy)  
-}
-
-print(resultmat)
-
-
-```
 
 
 
