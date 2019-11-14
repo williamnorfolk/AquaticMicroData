@@ -152,13 +152,15 @@ plaza_time <- ggplot(plaza_total, aes(x = days_sig_rainfall, y = final_ecoli, fi
 
 plaza_time
 
-plaza_time_2 <- ggplot(mod_plaza, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_plaza) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+plaza_time_2 <- ggplot(mod_plaza, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme_classic() + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_plaza) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
 
-plaza_time_2
+plaza_time_22 <- plaza_time_2 +theme(legend.position = "none")
+
+plaza_time_22
 
 plaza_arrange <- plaza_time + expand_limits(y = c(0:5000)) + ggtitle("Plaza Stream") + xlab("Days Since Rain")
 
-plaza_arrange_2 <- plaza_time_2 + expand_limits(y = c(0:4)) + ggtitle("Plaza Stream") + xlab("Days Since Rain")
+plaza_arrange_2 <- plaza_time_22 + expand_limits(y = c(0:4)) + ggtitle("Plaza Stream") + xlab("Days Since Rain")
 ```
 
 ```{r}
@@ -179,13 +181,15 @@ hos_time <- ggplot(hos_total, aes(x = days_sig_rainfall, y = final_ecoli, fill =
 hos_time
 
 
-hos_time_2 <- ggplot(mod_hos, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_hos) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+hos_time_2 <- ggplot(mod_hos, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme_classic() + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_hos) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
 
-hos_time_2
+hos_time_22 <- hos_time_2 +theme(legend.position = "none")
+
+hos_time_22
 
 hos_arrange <- hos_time + expand_limits(y = c(0:5000)) + ggtitle("Hospital") + xlab("Days Since Rain")
 
-hos_arrange_2 <- hos_time_2 + expand_limits(y = c(0:4)) + ggtitle("Hospital") + xlab("Days Since Rain")
+hos_arrange_2 <- hos_time_22 + expand_limits(y = c(0:4)) + ggtitle("Hospital") + xlab("Days Since Rain")
 ```
 
 ```{r}
@@ -205,13 +209,15 @@ vm_time <- ggplot(vm_total, aes(x = days_sig_rainfall, y = final_ecoli, fill = d
 
 vm_time
 
-vm_time_2 <- ggplot(mod_vm, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_vm) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+vm_time_2 <- ggplot(mod_vm, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme_classic() + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_vm) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
 
-vm_time_2
+vm_time_22<- vm_time_2 +theme(legend.position = "none")
+
+vm_time_22
 
 vm_arrange <- vm_time + expand_limits(y = c(0:5000)) + ggtitle("Vet Med") + xlab("Days Since Rain")
 
-vm_arrange_2 <- vm_time_2 + expand_limits(y = c(0:4)) + ggtitle("Vet Med") + xlab("Days Since Rain")
+vm_arrange_2 <- vm_time_22 + expand_limits(y = c(0:4)) + ggtitle("Vet Med") + xlab("Days Since Rain")
 ```
 ```{r}
 tan_total <- subset(clean_data, sample_id == "T1")
@@ -227,13 +233,15 @@ tan_time <- ggplot(tan_total, aes(x = days_sig_rainfall, y = final_ecoli, fill =
 
 tan_time
 
-tan_time_2 <- ggplot(mod_tan, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme(legend.position = "none") + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_vm) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+tan_time_2 <- ggplot(mod_tan, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme_classic() + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_vm) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
 
-tan_time_2
+tan_time_22 <- tan_time_2 +theme(legend.position = "none")
+
+tan_time_22
 
 tan_arrange <- tan_time + expand_limits(y = c(0:5000)) + ggtitle("Tanyard") + xlab("Days Since Rain")
 
-tan_arrange_2 <- tan_time_2 + expand_limits(y = c(0:4)) + ggtitle("Tanyard") + xlab("Days Since Rain")
+tan_arrange_2 <- tan_time_22 + expand_limits(y = c(0:4)) + ggtitle("Tanyard") + xlab("Days Since Rain")
 ```
 
 
@@ -243,7 +251,7 @@ tan_arrange_2 <- tan_time_2 + expand_limits(y = c(0:4)) + ggtitle("Tanyard") + x
 ggarrange(plaza_arrange, hos_arrange, vm_arrange, tan_arrange, nrow = 1, ncol = 4)
 
 #This plot is correctly log scaled
-ggarrange(plaza_arrange_2, hos_arrange_2, vm_arrange_2, tan_arrange_2, nrow = 1, ncol = 4)
+ggarrange(plaza_arrange_2, hos_arrange_2, tan_arrange_2, vm_arrange_2, nrow = 1, ncol = 4)
 
 ```
 
@@ -316,14 +324,25 @@ split_ecoli_not_log <- ggplot(split_years, aes(x = Year, y = final_ecoli)) + geo
 
 split_ecoli_not_log
 
-split_ecoli_log <- ggplot(split_years, aes(x = Year, y = log_final_ecoli, fill = Year)) + geom_boxplot(alpha = 0.5, lwd = 0.75) + xlab("Season Data Collected") + ylab(ecoli_log_not_mean) + ggtitle(log_title_ecoli) + theme_classic() + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+split_ecoli_log <- ggplot(split_years, aes(x = Year, y = log_final_ecoli, fill = Year)) + geom_boxplot(alpha = 0.5, lwd = 0.75) + xlab("Year Collected") + ylab(ecoli_log_not_mean) + theme_classic() + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
 
-split_ecoli_log + theme(legend.position = "none")
+# + ggtitle(log_title_ecoli)
+
+c <- split_ecoli_log + theme(legend.position = "none")
+
+c
 
 #Conductivity is not in correct units for past data
-split_con <- ggplot(split_years, aes(x = Year, y = conductivity)) + geom_boxplot()
+split_con <- ggplot(split_years, aes(x = Year, y = conductivity, fill = Year)) + geom_boxplot(alpha = 0.5, lwd = 0.75) + xlab("Year Collected") + ylab("Water Conductivity (ms/Cm)") + theme_classic() + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+
+# + ggtitle("Past vs. Present Conductivity (ms/Cm) Combined Hospital and Plaza Sites")
 
 split_con
+
+a <- split_con + theme(legend.position = "none")
+
+a
+
 
 split_high_temp <- ggplot(split_years, aes(x = Year, y = ambient_air_high_c)) + geom_boxplot()
 
@@ -333,10 +352,62 @@ split_low_temp <- ggplot(split_years, aes(x = Year, y = ambient_air_low_c)) + ge
 
 split_low_temp
 
-split_water_temp <- ggplot(split_years, aes(x = Year, y = water_temp, fill = Year)) + geom_boxplot(alpha = 0.5, lwd = 0.75) + xlab("Season Data Collected") + ylab("Water Temperature (C)") + ggtitle("Past vs. Present Water Temperature (C) Combined Hospital and Plaza Sites") + theme_classic() + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+split_water_temp <- ggplot(split_years, aes(x = Year, y = water_temp, fill = Year)) + geom_boxplot(alpha = 0.5, lwd = 0.75) + xlab("Year Collected") + ylab("Water Temperature (C)") + theme_classic() + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
 
-split_water_temp + theme(legend.position = "none")
+# + ggtitle("Past vs. Present Water Temperature (C) Combined Hospital and Plaza Sites")
+
+t <- split_water_temp + theme(legend.position = "none")
+
+t
+
+box_title <- expression(paste(bold("Water Quality Indicators in Athens GA Streams ")))
+
+
+cat <- grid.arrange(c, a, t, nrow = 1)
+
+cat
 ```
+
+
+
+
+```{r}
+epa_plot <- rbind(plaza_total, hos_total, vm_total, tan_total)
+
+log_tran <- epa_plot %>% dplyr::mutate(log_final_ecoli = log10(final_ecoli))
+
+epa_mutate <- log_tran %>% dplyr::mutate(sample_id = recode(sample_id,
+                                                        "P1" = "Plaza Creek",
+                                                        "P2" = "Plaza Creek",
+                                                        "H1" = "Hospital Creek",
+                                                        "H2" = "Hospital Creek",
+                                                        "VM1" = "Vet Med Pond",
+                                                        "VM2" = "Vet Med Pond",
+                                                        "T1" = "Tanyard Creek"))
+
+
+epa <- ggplot(epa_mutate, aes(x = sample_id, y = log_final_ecoli, fill = sample_id)) + stat_summary(fun.y = "mean", geom = "bar") + geom_hline(yintercept = 2.163, linetype = "dotted", size = 1) + xlab("Sample Location") + ylab(mean_ecoli_cfu) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A", "#355E3B")) + theme(legend.position = "none") + theme_classic()
+
+epa + theme(legend.position = "none")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
