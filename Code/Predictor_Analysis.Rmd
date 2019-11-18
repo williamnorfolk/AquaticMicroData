@@ -233,7 +233,7 @@ tan_time <- ggplot(tan_total, aes(x = days_sig_rainfall, y = final_ecoli, fill =
 
 tan_time
 
-tan_time_2 <- ggplot(mod_tan, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme_classic() + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_vm) + scale_fill_manual(values = c("#004E60", "#00A3AD", "#66435A"))
+tan_time_2 <- ggplot(mod_tan, aes(x = days_sig_rainfall, y = log_final_ecoli, fill = days_sig_rainfall)) + stat_summary(fun.y = "mean", geom = "bar") + theme_classic() + xlab("Days Since Significant Rainfall") + ylab(mean_ecoli_cfu) + ggtitle(title_vm) + scale_fill_manual(values = c("#00A3AD", "#66435A"))
 
 tan_time_22 <- tan_time_2 +theme(legend.position = "none")
 
