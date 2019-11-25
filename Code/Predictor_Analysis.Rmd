@@ -558,4 +558,106 @@ g <- only_new$water_temp
 
 t.test(gg, g)
 ```
+```{r}
+#historic_all
+
+year_recode <- historic_all %>% dplyr::mutate(year_collected = recode(date,
+                                                    "10.12.16" = "2016",
+                                                    "10.26.16" = "2016",
+                                                    "9.7.2017" = "2017",
+                                                    "9.20.17" = "2017",
+                                                    "10.12.17" = "2017",
+                                                    "10.27.17" = "2017"))
+
+fall_19_divide <- subset(split_years, sample_id == "Fall 2019")
+
+add_year_fall19 <- fall_19_divide %>% dplyr::mutate(year_collected = "2019")
+
+reduce_19_only <- add_year_fall19 %>% dplyr::select(year_collected, water_temp, conductivity, final_ecoli)
+reduce_hist_only <- year_recode %>% dplyr::select(year_collected, water_temp, conductivity, final_ecoli)
+
+compare_years_ready <- rbind(reduce_19_only, reduce_hist_only)
+compare_years_ready <- compare_years_ready %>% dplyr::mutate(log_final_ecoli = log10(final_ecoli))
+
+```
+
+```{r test ecoli}
+#For individual t-testing
+just_16 <- subset(compare_years_ready, year_collected == "2016")
+just_17 <- subset(compare_years_ready, year_collected == "2017")
+just_19 <- subset(compare_years_ready, year_collected == "2019")
+
+#ANOVA for all
+anova_ecoli <- aov(log_final_ecoli ~ year_collected, data = compare_years_ready)
+summary(anova_ecoli)
+
+#There is not significant different in ecoli across three years
+```
+```{r}
+anova_con <- aov(conductivity ~ year_collected, data = compare_years_ready)
+summary(anova_con)
+
+#Conductivity is statistically signnificant 
+```
+
+```{r}
+anova_temp <- aov(water_temp ~ year_collected, data = compare_years_ready)
+summary(anova_temp)
+
+#Water temp is statistically significant
+```
+
+```{r indiv t-test ecoli}
+x <- just_16$final_ecoli
+y <- just_17$final_ecoli
+z <- just_19$final_ecoli
+
+c <- t.test(x, y)
+
+a <- t.test(x, z)
+
+t <- t.test(y, z)
+
+t_tab <- map_df(list(c, a, t), tidy)
+
+kable(t_tab)
+
+#2019 is significantly different from 2016 and 2017 respectively.
+```
+
+```{r}
+x <- just_16$conductivity
+y <- just_17$conductivity
+z <- just_19$conductivity
+
+c <- t.test(x, y)
+
+a <- t.test(x, z)
+
+t <- t.test(y, z)
+
+t_tab <- map_df(list(c, a, t), tidy)
+
+kable(t_tab)
+
+#2019 is significantly different from 2016 and 2017 respectively
+```
+
+```{r}
+x <- just_16$water_temp
+y <- just_17$water_temp
+z <- just_19$water_temp
+
+c <- t.test(x, y)
+
+a <- t.test(x, z)
+
+t <- t.test(y, z)
+
+t_tab <- map_df(list(c, a, t), tidy)
+
+kable(t_tab)
+
+#2019 is statistically significant compared to 2016 but NOT 2017. 2017 is statistically significant compared to 2016. 
+```
 
