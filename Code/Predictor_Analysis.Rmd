@@ -133,6 +133,7 @@ kable(t_tab)
 Well nothing is significant it looks like unfortunately...
 
 
+
 Plaza Over Time
 
 ```{r plaza group}
@@ -160,7 +161,7 @@ plaza_time_22
 
 plaza_arrange <- plaza_time + expand_limits(y = c(0:5000)) + ggtitle("Plaza Stream") + xlab("Days Since Rain")
 
-plaza_arrange_2 <- plaza_time_22 + expand_limits(y = c(0:4)) + ggtitle("Plaza Stream") + xlab("Days Since Rain")
+plaza_arrange_2 <- plaza_time_22 + expand_limits(y = c(0:4)) + ggtitle("Plaza Stream") + xlab("Days Since Rain") + geom_hline(yintercept = 2.163, linetype = "dotted", size = 1)
 ```
 
 ```{r}
@@ -189,7 +190,7 @@ hos_time_22
 
 hos_arrange <- hos_time + expand_limits(y = c(0:5000)) + ggtitle("Hospital") + xlab("Days Since Rain")
 
-hos_arrange_2 <- hos_time_22 + expand_limits(y = c(0:4)) + ggtitle("Hospital") + xlab("Days Since Rain")
+hos_arrange_2 <- hos_time_22 + expand_limits(y = c(0:4)) + ggtitle("Hospital") + xlab("Days Since Rain") + geom_hline(yintercept = 2.163, linetype = "dotted", size = 1)
 ```
 
 ```{r}
@@ -217,7 +218,7 @@ vm_time_22
 
 vm_arrange <- vm_time + expand_limits(y = c(0:5000)) + ggtitle("Vet Med") + xlab("Days Since Rain")
 
-vm_arrange_2 <- vm_time_22 + expand_limits(y = c(0:4)) + ggtitle("Vet Med") + xlab("Days Since Rain")
+vm_arrange_2 <- vm_time_22 + expand_limits(y = c(0:4)) + ggtitle("Vet Med") + xlab("Days Since Rain") + geom_hline(yintercept = 2.163, linetype = "dotted", size = 1)
 ```
 ```{r}
 tan_total <- subset(clean_data, sample_id == "T1")
@@ -241,7 +242,7 @@ tan_time_22
 
 tan_arrange <- tan_time + expand_limits(y = c(0:5000)) + ggtitle("Tanyard") + xlab("Days Since Rain")
 
-tan_arrange_2 <- tan_time_22 + expand_limits(y = c(0:4)) + ggtitle("Tanyard") + xlab("Days Since Rain")
+tan_arrange_2 <- tan_time_22 + expand_limits(y = c(0:4)) + ggtitle("Tanyard") + xlab("Days Since Rain") + geom_hline(yintercept = 2.163, linetype = "dotted", size = 1)
 ```
 
 
@@ -429,18 +430,132 @@ v_lines
 
 
 
+
+
 ```{r}
-library(plotly)
+
+#plaza_total
+#vm_totoal
+#hos_total
+#tan_total
 
 
-dual_line <- plot_ly(data = clean_data, x = ~days_sig_rainfall, y = ~final_ecoli, type = "box")
+plaza_15 <- subset(plaza_total, days_sig_rainfall == "15")
+plaza_27 <- subset(plaza_total, days_sig_rainfall == "27")
+plaza_34 <- subset(plaza_total, days_sig_rainfall == "34")
 
-dual_line
+#res.aov <- aov(weight ~ group, data = my_data)
+
+x <- plaza_15$final_ecoli
+y <- plaza_27$final_ecoli
+z <- plaza_34$final_ecoli
+```
+
+```{r}
+c <- t.test(x, y)
+
+a <- t.test(x, z)
+
+t <- t.test(y, z)
+
+t_tab <- map_df(list(c, a, t), tidy)
+
+kable(t_tab)
+```
+
+```{r}
+hos_15 <- subset(hos_total, days_sig_rainfall == "15")
+hos_27 <- subset(hos_total, days_sig_rainfall == "27")
+hos_34 <- subset(hos_total, days_sig_rainfall == "34")
+
+#res.aov <- aov(weight ~ group, data = my_data)
+
+x <- hos_15$final_ecoli
+y <- hos_27$final_ecoli
+z <- hos_34$final_ecoli
+```
+
+```{r}
+c <- t.test(x, y)
+
+a <- t.test(x, z)
+
+t <- t.test(y, z)
+
+t_tab <- map_df(list(c, a, t), tidy)
+
+kable(t_tab)
+```
+
+```{r}
+vm_15 <- subset(vm_total, days_sig_rainfall == "15")
+vm_27 <- subset(vm_total, days_sig_rainfall == "27")
+vm_34 <- subset(vm_total, days_sig_rainfall == "34")
+
+#res.aov <- aov(weight ~ group, data = my_data)
+
+x <- vm_15$final_ecoli
+y <- vm_27$final_ecoli
+z <- vm_34$final_ecoli
+```
+
+```{r}
+c <- t.test(x, y)
+
+a <- t.test(x, z)
+
+t <- t.test(y, z)
+
+t_tab <- map_df(list(c, a, t), tidy)
+
+kable(t_tab)
+```
+
+```{r}
+vm_27 <- subset(vm_total, days_sig_rainfall == "27")
+vm_34 <- subset(vm_total, days_sig_rainfall == "34")
+
+#res.aov <- aov(weight ~ group, data = my_data)
+
+y <- vm_27$final_ecoli
+z <- vm_34$final_ecoli
+```
+
+```{r}
+
+
+t <- t.test(y, z)
+
+t_tab <- map_df(list(c, a, t), tidy)
+
+kable(t_tab)
 ```
 
 
+```{r}
+#split_years 
 
+only_hist <- subset(split_years, sample_id == "Fall 2016 & 2017")
+only_new <- subset(split_years, sample_id == "Fall 2019")
 
+gg <- only_hist$conductivity
+g <- only_new$conductivity
 
+t.test(gg, g)
 
+```
+
+```{r}
+gg <- only_hist$final_ecoli
+g <- only_new$final_ecoli
+
+t.test(gg, g)
+```
+
+```{r}
+gg <- only_hist$water_temp
+g <- only_new$water_temp
+
+t.test(gg, g)
+```
 
